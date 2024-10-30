@@ -44,4 +44,10 @@ app.put('/livros/:id', (req, res) => {
     res.status(200).json(livros);
 });
 
-export default app
+app.delete('/livros/:id', (req, res) => {
+    const index = searchBook(req.params.id);
+    livros.splice(index, 1);
+    res.status(200).send(`Book with id ${index + 1} removed successfully.`);
+});
+
+export default app;
