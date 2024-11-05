@@ -61,6 +61,16 @@ class LivroController {
         }
     }
 
+    static async listLivroByPublisher(req, res) {
+        const publisher = req.query.publi
+        try {
+            const livrosByPublisher = await livro.find({ publisher: publisher });
+            res.status(200).json(livrosByPublisher);
+        } catch (error) {
+            res.status(500).json({ message: `${error.message} - search error` });
+        }
+    }
+
 };
 
 export default LivroController;
