@@ -2,16 +2,16 @@ import author from "../models/Author.js";
 
 class AuthorController {
 
-  static async listAuthors(req, res) {
+  static listAuthors = async (req, res) => {
     try {
       const authors = await author.find({});
       res.status(200).json(authors);
     } catch (error) {
       res.status(500).json({ message: `${error.message} - Internal server error` });
     }
-  }
+  };
 
-  static async listAuthorById(req, res) {
+  static listAuthorById = async (req, res) => {
     try {
       const id = req.params.id;
       const foundAuthor = await author.findById(id);
@@ -19,9 +19,9 @@ class AuthorController {
     } catch (error) {
       res.status(400).send({ message: `${error.message} - Author not found` });
     }
-  }
+  };
 
-  static async createAuthor(req, res) {
+  static createAuthor = async (req, res) => {
     try {
       let authorNew = new author(req.body);
       const authorResult = await authorNew.save();
@@ -29,9 +29,9 @@ class AuthorController {
     } catch (error) {
       res.status(500).json({ message: `${error.message} - failed to create author` });
     }
-  }
+  };
 
-  static async updateAuthor(req, res) {
+  static updateAuthor = async (req, res) => {
     try {
       const id = req.params.id;
       await author.findByIdAndUpdate(id, req.body);
@@ -39,9 +39,9 @@ class AuthorController {
     } catch (error) {
       res.status(500).send({ message: `${error.message} - author update error` });
     }
-  }
+  };
 
-  static async deleteAuthor(req, res) {
+  static deleteAuthor = async (req, res) => {
     try {
       const id = req.params.id;
       await author.findByIdAndDelete(id);
@@ -49,7 +49,7 @@ class AuthorController {
     } catch (error) {
       res.status(500).send({ message: `${error.message} - author delete error` });
     }
-  }
+  };
 
 };
 

@@ -2,7 +2,7 @@ import livro from "../models/Livro.js";
 
 class LivroController {
 
-  static async listLivros(req, res) {
+  static listLivros = async (req, res) => {
     try {
       const livros = await livro.find()
         .populate("author")
@@ -12,9 +12,9 @@ class LivroController {
     } catch (error) {
       res.status(500).json({ message: `${error.message} - request error` });
     }
-  }
+  };
 
-  static async listLivroById(req, res) {
+  static listLivroById = async (req, res) => {
     try {
       const id = req.params.id;
       const foundLivro = await livro.findById(id)
@@ -25,9 +25,9 @@ class LivroController {
     } catch (error) {
       res.status(400).send({ message: `${error.message} - Book not found` });
     }
-  }
+  };
 
-  static async createLivro(req, res) {
+  static createLivro = async (req, res) => {
     try {
       let livroNew = new livro(req.body);
 
@@ -37,9 +37,9 @@ class LivroController {
     } catch (error) {
       res.status(500).json({ message: `${error.message} - failed to create livro` });
     }
-  }
+  };
 
-  static async updateLivro(req, res) {
+  static updateLivro = async (req, res) => {
     try {
       const id = req.params.id;            
       await livro.findByIdAndUpdate(id, { $set: req.body});
@@ -48,9 +48,9 @@ class LivroController {
     } catch (error) {
       res.status(500).send({ message: `${error.message} - book update error` });
     }
-  }
+  };
 
-  static async deleteLivro(req, res) {
+  static deleteLivro = async (req, res) => {
     try {
       const id = req.params.id;
       await livro.findByIdAndDelete(id);
@@ -58,9 +58,9 @@ class LivroController {
     } catch (error) {
       res.status(500).send({ message: `${error.message} - book update error` });
     }
-  }
+  };
 
-  static async listLivroByPublisher(req, res) {
+  static listLivroByPublisher = async (req, res) => {
     const publisher = req.query.publi;
     try {
       const livrosByPublisher = await livro.find({ publisher: publisher });
@@ -68,7 +68,7 @@ class LivroController {
     } catch (error) {
       res.status(500).json({ message: `${error.message} - search error` });
     }
-  }
+  };
 
 };
 
