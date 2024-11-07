@@ -1,4 +1,4 @@
-import { author } from "../models/Author.js";
+import author from "../models/Author.js";
 
 class AuthorController {
 
@@ -7,7 +7,7 @@ class AuthorController {
             const authors = await author.find({});
             res.status(200).json(authors);
         } catch (error) {
-            res.status(500).json({ message: `${error.message} - request error` });
+            res.status(500).json({ message: "Internal server error" });
         }
     }
 
@@ -15,16 +15,17 @@ class AuthorController {
         try {
             const id = req.params.id;
             const foundAuthor = await author.findById(id);
-            res.status(200).json(foundAuthor);
+            res.status(200).send(foundAuthor);
         } catch (error) {
-            res.status(500).json({ message: `${error.message} - author request error` });
+            res.status(400).send({ message: `${error.message} - Author not found` });
         }
     }
 
     static async createAuthor(req, res) {
         try {
-            const newAuthor = await author.create(req.body);
-            res.status(201).json({ message: "Created successfully", author: newAuthor });
+            let authorNew = new author(req.body);
+            const authorResult = await authorNew.save();
+            res.status(201).send(authorResult.toJSON());
         } catch (error) {
             res.status(500).json({ message: `${error.message} - failed to create author` });
         }
@@ -34,9 +35,9 @@ class AuthorController {
         try {
             const id = req.params.id;
             await author.findByIdAndUpdate(id, req.body);
-            res.status(200).json({ message: 'Author updated'});
+            res.status(200).send({ message: 'Author updated'});
         } catch (error) {
-            res.status(500).json({ message: `${error.message} - author update error` });
+            res.status(500).send({ message: `${error.message} - author update error` });
         }
     }
 
@@ -44,9 +45,9 @@ class AuthorController {
         try {
             const id = req.params.id;
             await author.findByIdAndDelete(id);
-            res.status(200).json({ message: 'Author deleted.'});
+            res.status(200).send({ message: 'Author deleted.'});
         } catch (error) {
-            res.status(500).json({ message: `${error.message} - author delete error` });
+            res.status(500).send({ message: `${error.message} - author delete error` });
         }
     }
 
