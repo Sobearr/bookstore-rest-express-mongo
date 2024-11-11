@@ -11,8 +11,6 @@ class AuthorController {
       res.status(500).json({ message: `${error.message} - Internal server error` });
     }
   };
-  
-  
 
   static listAuthorById = async (req, res) => {
     try {
