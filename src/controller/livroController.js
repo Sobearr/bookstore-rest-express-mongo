@@ -2,7 +2,7 @@ import livro from "../models/Livro.js";
 
 class LivroController {
 
-  static listLivros = async (req, res) => {
+  static listLivros = async (req, res, next) => {
     try {
       const livros = await livro.find()
         .populate("author")
@@ -10,11 +10,11 @@ class LivroController {
 
       res.status(200).json(livros);
     } catch (error) {
-      res.status(500).json({ message: `${error.message} - request error` });
+      next(error);
     }
   };
 
-  static listLivroById = async (req, res) => {
+  static listLivroById = async (req, res, next) => {
     try {
       const id = req.params.id;
       const foundLivro = await livro.findById(id)
@@ -23,11 +23,11 @@ class LivroController {
 
       res.status(200).json(foundLivro);
     } catch (error) {
-      res.status(400).send({ message: `${error.message} - Book not found` });
+      next(error);
     }
   };
 
-  static createLivro = async (req, res) => {
+  static createLivro = async (req, res, next) => {
     try {
       let livroNew = new livro(req.body);
 
@@ -35,38 +35,38 @@ class LivroController {
 
       res.status(201).send(livroResultado.toJSON());
     } catch (error) {
-      res.status(500).json({ message: `${error.message} - failed to create livro` });
+      next(error);
     }
   };
 
-  static updateLivro = async (req, res) => {
+  static updateLivro = async (req, res, next) => {
     try {
       const id = req.params.id;            
       await livro.findByIdAndUpdate(id, { $set: req.body});
             
       res.status(200).send({ message: "Book updated"});
     } catch (error) {
-      res.status(500).send({ message: `${error.message} - book update error` });
+      next(error);
     }
   };
 
-  static deleteLivro = async (req, res) => {
+  static deleteLivro = async (req, res, next) => {
     try {
       const id = req.params.id;
       await livro.findByIdAndDelete(id);
       res.status(200).send({ message: "Book deleted."});
     } catch (error) {
-      res.status(500).send({ message: `${error.message} - book update error` });
+      next(error);
     }
   };
 
-  static listLivroByPublisher = async (req, res) => {
+  static listLivroByPublisher = async (req, res, next) => {
     const publisher = req.query.publi;
     try {
       const livrosByPublisher = await livro.find({ publisher: publisher });
       res.status(200).send(livrosByPublisher);
     } catch (error) {
-      res.status(500).json({ message: `${error.message} - search error` });
+      next(error);
     }
   };
 
