@@ -1,3 +1,4 @@
+import NotFound from "../errors/NotFound.js";
 import livro from "../models/Livro.js";
 
 class LivroController {
@@ -21,7 +22,11 @@ class LivroController {
         .populate("author", "nome")
         .exec();
 
-      res.status(200).json(foundLivro);
+      if (foundLivro !== null) {
+        res.status(200).json(foundLivro);
+      } else {
+        next(new NotFound("Book ID not found"));
+      }
     } catch (error) {
       next(error);
     }
@@ -42,9 +47,13 @@ class LivroController {
   static updateLivro = async (req, res, next) => {
     try {
       const id = req.params.id;            
-      await livro.findByIdAndUpdate(id, { $set: req.body});
-            
-      res.status(200).send({ message: "Book updated"});
+      const livroFound = await livro.findByIdAndUpdate(id, { $set: req.body});
+      
+      if (livroFound !== null) {
+        res.status(200).send({ message: "Book updated"});
+      } else {
+        next(new NotFound("Book ID not found"));
+      }
     } catch (error) {
       next(error);
     }
@@ -53,8 +62,13 @@ class LivroController {
   static deleteLivro = async (req, res, next) => {
     try {
       const id = req.params.id;
-      await livro.findByIdAndDelete(id);
-      res.status(200).send({ message: "Book deleted."});
+      const livroFound = await livro.findByIdAndDelete(id);
+      
+      if (livroFound !== null) {
+        res.status(200).send({ message: "Book deleted."});
+      } else {
+        next(new NotFound("Book ID not found"));
+      }
     } catch (error) {
       next(error);
     }
