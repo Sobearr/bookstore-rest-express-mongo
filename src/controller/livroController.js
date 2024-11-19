@@ -74,16 +74,32 @@ class LivroController {
     }
   };
 
-  static listLivroByPublisher = async (req, res, next) => {
-    const publisher = req.query.publi;
+  static listLivroByFilter = async (req, res, next) => {
     try {
-      const livrosByPublisher = await livro.find({ publisher: publisher });
+      const search = processSearch(req.query);
+      const livrosByPublisher = await livro.find(search);
+
       res.status(200).send(livrosByPublisher);
     } catch (error) {
       next(error);
     }
   };
 
-};
+}
+
+function processSearch(parames) {
+  const { publisher, title, minPaginas, maxPaginas } = parames;
+
+  const search = {};
+
+  if (publisher) search.publisher = publisher;
+  if (title) search.title = { $regex: title, $options: "i" };
+
+  if (minPaginas || maxPaginas) search.pages = {};
+  if (minPaginas) search.pages.$gte = minPaginas;
+  if (maxPaginas) search.pages.$lte = maxPaginas;
+
+  return search;
+}
 
 export default LivroController;
