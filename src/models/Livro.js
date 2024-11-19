@@ -11,7 +11,7 @@ const livroSchema = new mongoose.Schema({
     type: String,
     required: [true, "The publisher's name is required"],
     enum: {
-      values: ["Allen", "Allen & Unwin"],
+      values: ["Allen", "Allen & Unwin", "Penguin Classics"],
       message: "The publisher {VALUE} is not allowed"
     }
   },
