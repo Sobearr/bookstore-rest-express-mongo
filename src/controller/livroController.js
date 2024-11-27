@@ -1,3 +1,4 @@
+import BadRequestError from "../errors/BadRequestError.js";
 import NotFound from "../errors/NotFound.js";
 import { author, livro } from "../models/index.js";
 
@@ -5,11 +6,22 @@ class LivroController {
 
   static listLivros = async (req, res, next) => {
     try {
-      const livros = await livro.find()
-        .populate("author")
-        .exec();
+      let { limit = 5, page = 1} = req.query;
 
-      res.status(200).json(livros);
+      limit = parseInt(limit);
+      page = parseInt(page);
+
+      if (limit > 0 && page > 0) {
+        const livros = await livro.find()
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .populate("author")
+          .exec();
+
+        res.status(200).json(livros);
+      } else {
+        next(new BadRequestError());
+      }
     } catch (error) {
       next(error);
     }
