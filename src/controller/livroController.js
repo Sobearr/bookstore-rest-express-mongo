@@ -1,4 +1,3 @@
-import BadRequestError from "../errors/BadRequestError.js";
 import NotFound from "../errors/NotFound.js";
 import { author, livro } from "../models/index.js";
 
@@ -6,22 +5,11 @@ class LivroController {
 
   static listLivros = async (req, res, next) => {
     try {
-      let { limit = 5, page = 1} = req.query;
+      const getBooks = livro.find();
 
-      limit = parseInt(limit);
-      page = parseInt(page);
+      req.result = getBooks;
 
-      if (limit > 0 && page > 0) {
-        const livros = await livro.find()
-          .skip((page - 1) * limit)
-          .limit(limit)
-          .populate("author")
-          .exec();
-
-        res.status(200).json(livros);
-      } else {
-        next(new BadRequestError());
-      }
+      next();
     } catch (error) {
       next(error);
     }
@@ -30,9 +18,9 @@ class LivroController {
   static listLivroById = async (req, res, next) => {
     try {
       const id = req.params.id;
-      const foundLivro = await livro.findById(id)
-        .populate("author", "nome")
-        .exec();
+      const foundLivro = await livro
+        .findById(id, {}, { autopopulate: false })
+        .populate("author");
 
       if (foundLivro !== null) {
         res.status(200).json(foundLivro);
@@ -91,11 +79,11 @@ class LivroController {
       const search = await processSearch(req.query);
       
       if (search !== null) {
-        const livrosResult = await livro
-          .find(search)
-          .populate("author");
+        const livrosResult = livro.find(search);
+
+        req.result = livrosResult;
   
-        res.status(200).send(livrosResult);
+        next();
       } else {
         res.status(200).send([]);
       }
@@ -107,16 +95,16 @@ class LivroController {
 }
 
 async function processSearch(parames) {
-  const { publisher, title, minPaginas, maxPaginas, authorName } = parames;
+  const { publisher, title, minPages, maxPages, authorName } = parames;
 
   let search = {};
 
   if (publisher) search.publisher = publisher;
   if (title) search.title = { $regex: title, $options: "i" };
 
-  if (minPaginas || maxPaginas) search.pages = {};
-  if (minPaginas) search.pages.$gte = minPaginas;
-  if (maxPaginas) search.pages.$lte = maxPaginas;
+  if (minPages || maxPages) search.pages = {};
+  if (minPages) search.pages.$gte = minPages;
+  if (maxPages) search.pages.$lte = maxPages;
 
   if (authorName) {
     const foundAuthor = await author.findOne({ name: authorName });
